@@ -5,8 +5,6 @@ alumno_prode('Fernandez','Garcia','Jose Carlos','y16i024').
 
 natural(s(0)). %numeros naturales a partir de 1
 natural(s(X)) :-
-
-
 	natural(X).
 
 nat(0). %numeros naturales a partir de 0
@@ -28,7 +26,21 @@ recorrerColor(C,[pieza(_,_,_,Yc)|Yz]):-
 	C\=Yc,
 	recorrerColor(C,Yz).
 
+par(0).
+par(s(s(X))):-
+	par(X).
 
+numeroClavos([],X):-
+	par(X).
+
+numeroClavos([b|Y],Z):-
+	numeroClavos(Y,Z).
+
+numeroClavos([X|Y],Z):-
+	color(X),
+	numeroClavos(Y,s(Z)).
+
+	
 color(r).
 color(a).
 color(v).
@@ -65,7 +77,7 @@ coloresTorre([pieza(X,Y,Z,C)|Xs],[C|Cs]) :-
 	coloresTorre(Xs,Cs).
 	
 
-coloresIncluidos([pieza(Xs,Ys,Zs,Cs)|[]],[pieza(Xt,Yt,Zt,Ct)|Tt]):-
+coloresIncluidos([pieza(Xs,Ys,Zs,Cs)],[pieza(Xt,Yt,Zt,Ct)|Tt]):-
 	esTorre([pieza(Xs,Ys,Zs,Cs)]),
 	esTorre([pieza(Xt,Yt,Zt,Ct)]),
 	recorrerColor(Cs,[pieza(Xt,Yt,Zt,Ct)|Tt]).
@@ -76,3 +88,8 @@ coloresIncluidos([pieza(Xs,Ys,Zs,Cs)|Ts],[pieza(Xt,Yt,Zt,Ct)|Tt]):-
 	recorrerColor(Cs,[pieza(Xt,Yt,Zt,Ct)|Tt]),
 	coloresIncluidos(Ts,[pieza(Xt,Yt,Zt,Ct)|Tt]).
 
+esEdificioPar([[X|Xs]]):-
+	numeroClavos([X|Xs],0).
+esEdificioPar([[X|Xs]|Ys]):-
+	numeroClavos([X|Xs],0),
+	esEdificioPar(Ys).
