@@ -1,0 +1,455 @@
+Alumnos:
+
+Jose Carlos Fernandez Garcia - y16i024
+Loreto Garcia Tejada - y16i010
+Maria Gutierrez Martin - y16i017
+
+
+Declaración de constantes:
+
+	color(r).
+	color(a).
+	color(v).
+	color(am).
+
+Método esTorre/1:
+
+En caso de que sea una única pieza lo que conforma la lista, lo único que se tiene que cumplir para que sea una torre es que los parámetros de dicha pieza sean 3 números de Peano naturales mayores o iguales a 1 (ancho, altura y profundidad) y que el último sea uno de los cuatro colores declarados previamente en el código. 
+
+esTorre([pieza(X,Y,Z,C)]):-
+	natural(X),
+	natural(Y),
+	natural(Z),
+	color(C).
+
+
+En el caso de que haya más de una única pieza en la lista, cogemos las dos primeras piezas de la lista, realizamos las mismas comprobaciones en las piezas para que sean piezas válidas y, procedemos a comparar la anchura como la profundidad de las piezas, asegurandonos que la primera pieza sea menor o igual en dichos argumentos. Y, por último, realizamos la recursividad sobre toda la lista, pasando como cabeza la segunda pieza y el resto de la lista resultante. 
+
+esTorre([pieza(Xs,Ys,Zs,Cs),pieza(Xt,Yt,Zt,Ct)|Xl]):-
+	natural(Xs), natural(Ys), natural(Zs), color(Cs),
+	natural(Xt), natural(Yt), natural(Zt), color(Ct),
+	menor_igual(Xs,Xt),
+	menor_igual(Zs,Zt),
+	esTorre([pieza(Xt,Yt,Zt,Ct)|Xl]).
+
+	Métodos auxiliares de esTorre/1:
+	
+	El caso base es que el número sea 1, y la recursividad va reduciendo el número de Peano hasta llegar a dicho caso base.
+
+	natural(s(0)). 
+	natural(s(X)) :-
+		natural(X).
+
+	El caso base es que el número sea 0, y la recursividad va reduciendo el número de Peano hasta llegar a dicho caso base.
+
+	nat(0). 
+	nat(s(X)) :-
+		nat(X).
+
+	En este método auxiliar tenemos dos casos bases: uno que comprueba si son iguales (los dos son cero), y el otro en el que comprueba que el 	primero es menor que el segundo argumento (el primer argumento es 0, mientras que el segundo se comprueba que el segundo sea natural). La recursividad consiste en reducir los números hasta que se cumplan alguno de los dos casos base. 
+	menor_igual(0,0).
+	menor_igual(0,s(X)):-
+		nat(X).
+	menor_igual(s(X),s(Y)):- 
+		menor_igual(X,Y).
+
+Pruebas de esTorre/1:
+
+esTorre([pieza(s(0),s(0),s(0),r)]). #yes
+
+esTorre([pieza(s(s(0)),s(s(s(0))),s(s(0)),r)]). #yes
+
+esTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(0)),s(s(s(0))),s(0),am)]). #yes
+
+esTorre([]). #no
+
+esTorre([pieza(s(0),s(0),s(s(0)),r),pieza(s(s(0)),s(s(s(0))),s(0),am)]). #no
+
+esTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(0)),s(s(s(0))),s(0),am),pieza(s(s(0)),s(s(s(0))),s(s(0)),a)]). #yes
+
+esTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(s(0))),s(s(s(0))),s(0),am),pieza(s(s(0)),s(s(s(0))),s(s(0)),r)]). #no
+
+esTorre([pieza(s(0),s(0),X,r),pieza(s(s(0)),s(s(s(0))),s(0),am)]).
+
+X = 0 ? ;
+
+X = s(0) ? ;
+
+#no
+
+esTorre([X,pieza(s(s(0)),s(s(s(0))),s(0),am)]).
+
+X = pieza(0,_,0,r) ? ;
+
+X = pieza(0,_,s(0),r) ? ;
+
+X = pieza(s(0),_,0,r) ? ;
+
+X = pieza(s(0),_,s(0),r) ? ;
+
+X = pieza(s(s(0)),_,0,r) ? ;
+
+X = pieza(s(s(0)),_,s(0),r) ? ;
+
+X = pieza(0,_,0,a) ? ;
+
+X = pieza(0,_,s(0),a) ? 
+
+#yes
+
+
+Metodo alturaTorre/2:
+
+En caso de que la lista que se pase está vacía, el segundo parámetro es 0, ya que la altura sería 0. Este caso es el caso base.
+
+alturaTorre([],0).	
+
+En caso de que haya como mínimo una pieza en la lista, se pasa como primer argumento la lista, identificando cual es su cabeza y como segundo argumento el sumatorio de las alturas de las piezas que conforman dicha lista (o torre). En primer lugar, comprobamos que la construcción (la lista pasada) es una torre, y utilizamos el método auxiliar sumaAltura, el cual resta a la altura total, la altura de la pieza de la cabecera de la lista pasada y, por último, haces la recursividad con la diferencia obtenida en sumaAltura y el resto de la lista. 
+
+alturaTorre([(pieza(X,Y,Z,C))|Xs],A):-
+	esTorre([(pieza(X,Y,Z,C))|Xs]),
+	sumaAltura(Y,T,A),
+	alturaTorre(Xs,T).
+
+
+
+	Métodos auxiliares de alturaTorre/2:
+
+	El caso base de sumaAltura consiste en cualquier número, al que le sumes 0, va a dar como resultado el mismo. 
+	sumaAltura(0,X,X).
+
+	La recursividad consiste en el hecho de que si le pasas al primer número su siguiente, y le sumas un mismo valor, va a dar como resultado, el resultado anterior más 1. 
+	sumaAltura(s(X),T,s(A)):-
+		sumaAltura(X,T,A).
+
+
+Pruebas de alturaTorre/2:
+
+alturaTorre([pieza(s(s(0)),s(s(s(0))),s(s(0)),r)], s(s(s(0)))). #yes
+
+alturaTorre([pieza(s(s(0)),s(s(s(0))),s(s(0)),r)], X). 
+
+X = s(s(s(0))) ? 
+#yes
+alturaTorre([pieza(s(s(0)),X,s(s(0)),r)], s(s(s(0)))). 
+
+X = s(s(s(0))) ? 
+#yes
+
+alturaTorre([pieza(s(s(0)),s(s(s(0))),s(s(0)),r),pieza(s(0),s(0),s(s(0)),r),pieza(s(s(0)),s(s(s(0))),s(0),am)], s(s(s(s(s(s(s(0)))))))). #no (no es una torre)
+
+alturaTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(0)),s(s(s(0))),s(0),am)], s(s(s(s(0))))). #yes
+
+alturaTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(0)),s(s(s(0))),s(0),am),pieza(s(s(0)),s(s(0)),s(0),am)], s(s(s(s(s(s(0))))))).#yes
+
+alturaTorre([pieza(s(0),X,s(0),r),pieza(s(s(0)),s(s(s(0))),s(0),am),pieza(s(s(0)),s(s(0)),s(0),am)], s(s(s(s(s(s(0))))))).
+
+
+X = s(0) ? 
+
+#yes
+
+alturaTorre([pieza(s(0),X,s(0),r),pieza(s(s(0)),Y,s(0),am),pieza(s(s(0)),s(s(0)),s(0),am)], s(s(s(s(s(s(0))))))).
+
+X = 0,
+Y = s(s(s(s(0)))) ? ;
+
+X = s(0),
+Y = s(s(s(0))) ? ;
+
+X = s(s(0)),
+Y = s(s(0)) ? ;
+
+X = s(s(s(0))),
+Y = s(0) ? ;
+
+X = s(s(s(s(0)))),
+Y = 0 ? ;
+
+#no
+
+alturaTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(0)),s(0),s(0),am),pieza(s(s(0)),s(s(0)),s(0),am)], X).
+
+X = s(s(s(s(0)))) ? ;
+
+no
+
+
+Metodo coloresTorre/2:
+
+El caso base corresponde a aquel en el que ambas listas sean vacías. 
+
+coloresTorre([],[]).
+
+En el primer argumento del metodo, el cual se corresponde con la construccion, existe al menos una pieza, la cual su color correspondiente se encuentra en la misma posición de la segunda lista pasada como segundo parámetro. En dicho metodo, se comprueba que sea una torre y la recursividad se hace con el resto de las listas. 
+
+coloresTorre([pieza(X,Y,Z,C)|Xs],[C|Cs]) :-
+	esTorre([pieza(X,Y,Z,C)|Xs]),
+	coloresTorre(Xs,Cs).
+
+Pruebas de coloresTorre/2:
+coloresTorre([pieza(s(s(0)),s(s(s(0))),s(s(0)),r)],[r]). #yes
+
+coloresTorre([pieza(s(s(0)),s(s(s(0))),s(s(0)),r)],[am]). #no
+
+coloresTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(0)),s(s(s(0))),s(0),am),pieza(s(s(0)),s(s(s(0))),s(s(0)),a)],X).
+X = [r,am,a] ? ;
+
+#no
+
+coloresTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(s(0))),s(s(s(0))),s(0),am),pieza(s(s(0)),s(s(s(0))),s(s(0)),r)],[r,am,r]). #no
+
+coloresTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(0)),s(s(s(0))),s(0),am),pieza(s(s(0)),s(s(s(0))),s(0),r)],[r,am,r]).#yes
+
+coloresTorre([pieza(s(0),s(0),s(0),red),pieza(s(s(0)),s(s(s(0))),s(0),am),pieza(s(s(0)),s(s(s(0))),s(0),r)],[red,am,r]).#no
+
+coloresTorre([pieza(s(0),s(0),s(0),r),pieza(s(s(0)),s(s(s(0))),s(0),X),pieza(s(s(0)),s(s(s(0))),s(0),r)],[r,am,r]).
+
+X = am ? ;
+
+#no
+
+
+Metodo coloresIncluidos/2:
+
+El caso base, el cual la primera construccion está vacía y la segunda construccion no se ve modificada (el motivo de ello se encuentra en el recorrerColor).
+ 
+coloresIncluidos([],[pieza(Xt,Yt,Zt,Ct)|Tt]):-
+	esTorre([pieza(Xt,Yt,Zt,Ct)|Tt]).
+
+En el metodo recursivo comprobamos que las dos construcciones sean torres y utilizamos el metodo auxiliar recorrerColor. La recursividad se hace pasando el resto de la lista de la primera construccion, y la segunda construccion entera. 
+
+coloresIncluidos([pieza(Xs,Ys,Zs,Cs)|Ts],[pieza(Xt,Yt,Zt,Ct)|Tt]):-
+	esTorre([pieza(Xs,Ys,Zs,Cs)|Ts]),
+	esTorre([pieza(Xt,Yt,Zt,Ct)|Tt]),
+	recorrerColor(Cs,[pieza(Xt,Yt,Zt,Ct)|Tt]),
+	coloresIncluidos(Ts,[pieza(Xt,Yt,Zt,Ct)|Tt]).
+
+	Metodos auxiliares de coloresIncluidos/2:
+
+	El caso base consiste en que el primer argumento pasado es un color (correspondiente a la primera construccion del metodo principal) que 	coincida con el color de alguna pieza de la segunda construccion. 
+	recorrerColor(C,[pieza(_,_,_,C)|_]).
+
+	Si no coincide, se va avanzando con la continuacion de la segunda construccion. 
+	recorrerColor(C,[pieza(_,_,_,Yc)|Yz]):-	
+		C\=Yc,
+		recorrerColor(C,Yz).
+
+Pruebas de coloresIncluidos/2:
+
+coloresIncluidos([pieza(s(0),s(0),s(0),r)],[pieza(s(0),s(0),s(0),r)]). #yes
+
+coloresIncluidos([pieza(s(0),s(0),s(0),r),pieza(s(0),s(0),s(0),r)],[pieza(s(0),s(0),s(0),r)]). #Yes
+
+coloresIncluidos([pieza(s(0),s(0),s(0),r),pieza(s(0),s(0),s(0),v)],[pieza(s(0),s(0),s(0),r),pieza(s(0),s(0),s(0),am)]). #No
+
+coloresIncluidos([pieza(s(s(0)),s(s(s(0))),s(s(0)),r)],[pieza(s(s(0)),s(s(s(0))),s(s(0)),r)]). #Yes
+
+coloresIncluidos([pieza(s(s(0)),s(s(s(0))),s(s(0)),r)],[pieza(s(s(0)),s(s(s(0))),s(s(0)),r),pieza(s(s(0)),s(s(s(0))),s(s(0)),am)]). #YES
+
+coloresIncluidos([pieza(s(0),s(0),s(0),r)],[pieza(s(0),s(0),s(0),r),pieza(s(0),s(0),s(0),am)]). #yes
+
+coloresIncluidos([pieza(s(0),s(0),s(0),r),pieza(s(0),s(0),s(0),am)],[pieza(s(0),s(0),s(0),r),pieza(s(0),s(0),s(0),am)]). #yes
+
+coloresIncluidos([pieza(s(0),s(0),s(0),r),pieza(s(0),s(0),s(0),am),pieza(s(0),s(0),s(0),r)],[pieza(s(0),s(0),s(0),r),pieza(s(0),s(0),s(0),am)]).#yes
+
+coloresIncluidos([pieza(s(0),s(0),s(0),rojo)],[pieza(s(0),s(0),s(0),r)]). #no
+
+coloresIncluidos([pieza(s(0),s(0),s(0),X),pieza(s(0),s(0),s(0),am)],[pieza(s(0),s(0),s(0),r),pieza(s(0),s(0),s(0),am)]).
+
+X = r ? ;
+
+X = am ? ;
+
+no
+
+coloresIncluidos([pieza(s(0),s(0),s(0),am),pieza(s(0),s(0),s(0),am)],[pieza(s(0),s(0),s(0),X),pieza(s(0),s(0),s(0),am)]).
+
+X = r ? ;
+
+X = a ? ;
+
+X = v ? ;
+
+X = am ? ;
+
+no
+
+
+Metodo esEdificioPar/1:
+
+El caso base es que la matriz está vacia. 
+
+esEdificioPar([]).
+
+El metodo esEdificioPar utiliza el metodo auxiliar numeroClavos, en el cual le pasamos como parametro la primera lista de la matriz (corresponde con la primera fila de la matriz) y un 0, a modo de contador. La recursividad se realiza con el resto de la matriz.  
+
+esEdificioPar([[X|Xs]|Ys]):-
+	numeroClavos([X|Xs],0),
+	esEdificioPar(Ys).
+
+	Metodos auxiliares para esEdificioPar/1:
+	
+	El metodo par va reduciendo de 2 en 2 el numero, y, si llega a 0, es par. 
+	par(0).
+	par(s(s(X))):-
+		par(X).
+
+	
+	El caso base tiene lugar cuando la lista, previamente decrementada en la recursividad del metodo numeroClavos, está vacía y, por tanto, se 	comprueba que el contador sea un numero par. 
+	numeroClavos([],X):-
+	par(X).
+
+	Si el elemento de la cabecera de la lista es "b", entonces no se incrementa el contador, pero se pasa el resto de la lista. 
+	numeroClavos([b|Y],Z):-
+		numeroClavos(Y,Z).
+
+	Si el elemento de la cabecera de la lista es un color, entonces el contador se incrementa y se avanza en la lista. 
+	numeroClavos([X|Y],Z):-
+		color(X),
+		numeroClavos(Y,s(Z)).
+	
+Pruebas esEdificioPar/1:
+
+esEdificioPar([b,b,r,r,r,r,b]). #no
+
+esEdificioPar([[b,b,r,r,r,r],[am,am,am,v,b,b]]). #no
+
+esEdificioPar([[b,b,r,r,r,r,b]]). #yes
+
+esEdificioPar([[b,b,r,r,r,r],[am,am,am,am,b,b],[b,b,b,am,am,v]]). #no
+
+esEdificioPar([[b,b,r,r,r,r],[am,am,am,am,b,b],[b,b,b,am,am,b]]). #yes
+
+esEdificioPar([[b,b,r,r,r,r],[am,am,am,X,b,b]]).
+
+X = r ? ;
+
+X = a ? ;
+
+X = v ? ;
+
+X = am ? ;
+
+no
+
+
+Metodo esEdificioPiramide/1:
+
+El caso base se da cuando la lista de listas se encuentre en la ultima fila de la matriz,la cual nos es indiferente los argumentos que sean. 
+
+esEdificioPiramide([[_|_]|[]]).
+
+En el metodo esEdificioPiramide cogemos las dos primeras listas de la matriz y las empleamos en el metodo auxiliar recorrerClavos. La recursividad se realiza con la segunda lista y el resto de la matriz. 
+
+esEdificioPiramide([[X|Xs],[Y|Ys]|Zt]):-
+	recorrerClavos([X|Xs],[Y|Ys],0,0),
+	esEdificioPiramide([[Y|Ys]|Zt]).
+
+	Metodos auxiliares esEdificioPiramide/1:
+
+	nat(0). 
+	nat(s(X)) :-
+		nat(X).
+
+	En este método auxiliar comprueba que el primero es menor que el segundo argumento (el primer argumento es 0, mientras que el segundo se comprueba que el segundo sea natural). La recursividad consiste en reducir los números hasta que se cumplan alguno de los dos casos base. 
+	menor_que(0,s(X)):-
+		nat(X).
+	menor_que(s(X),s(Y)):- 
+		menor_que(X,Y).
+
+	En este metodo comprobamos los clavos que se encuentran en cada lista. Para ello, tenemos el caso en el que las listas han llegado a ser vacías, ya que la recursividad va eliminando los elementos de las listas. Si los elementos son "b", se avanza en la lista, pero no se aumentan los contadores, mientras que si los elementos son colores, se avanza en la lista y en los contadores. Cuando se llega al caso de las listas vacías, se comprueba que el contador primero (correspondiente a la lista superior de la matriz) es menor estricto que el segundo.  
+	recorrerClavos([],[],X,Y):-
+		menor_que(X,Y).
+	recorrerClavos([b|Y],[b|T],Z,W):-
+		recorrerClavos(Y,T,Z,W).
+	recorrerClavos([b|Y],[U|T],Z,W):-
+		color(U),
+		recorrerClavos(Y,T,Z,s(W)).
+	recorrerClavos([X|Y],[b|T],Z,W):-
+		color(X),
+		recorrerClavos(Y,T,s(Z),W).
+	recorrerClavos([X|Y],[U|T],Z,W):-
+		color(X),
+		color(U),
+		recorrerClavos(Y,T,s(Z),s(W)).
+
+
+
+Pruebas de esEdificioPiramide/1:
+
+esEdificioPiramide([[b,b,r,r,r,b],[b,b,r,r,b],[b,b,r,b,b]]). #no
+
+esEdificioPiramide([[b,b,r,b,b],[b,b,r,r,b],[b,r,r,r,b]]). #yes
+
+esEdificioPiramide([[b,b,b,r,b]]). #yes
+
+esEdificioPiramide([[b,b,b,b,b]]). #yes
+
+esEdificioPiramide([X,[b,b,r,r,b],[b,r,r,r,b]]).
+
+X = [b,b,b,b,b] ? ;
+
+X = [b,b,b,b,r] ? ;
+
+X = [b,b,b,b,a] ? ;
+
+X = [b,b,b,b,v] ? ;
+
+X = [b,b,b,b,am] ? ;
+
+X = [b,b,b,r,b] ? ;
+
+X = [b,b,b,a,b] ? ;
+
+X = [b,b,b,v,b] ? ;
+
+X = [b,b,b,am,b] ? ;
+
+X = [b,b,r,b,b] ? ;
+
+X = [b,b,a,b,b] ? ;
+
+X = [b,b,v,b,b] ? ;
+
+X = [b,b,am,b,b] ? ;
+
+X = [b,r,b,b,b] ? 
+
+#yes
+
+esEdificioPiramide([[b,b,X,b,b],[b,b,r,r,b],[b,r,r,r,b]]).
+
+X = b ? ;
+
+X = r ? ;
+
+X = a ? ;
+
+X = v ? ;
+
+X = am ? ;
+
+#no
+
+esEdificioPiramide([[b,b,r,b,b],[b,b,r,r,b],[b,r,r,r,X]]).
+
+X = b ? ;
+
+X = r ? ;
+
+X = a ? ;
+
+X = v ? ;
+
+X = am ? ;
+
+#no
+
+
+Comentarios: 
+
+Damos por hecho que si es vacío el argumento que se pasa en los casos base de los metodos anteriores, es cierto. 
+Si se trata de un edificio, si es todos b, también se considera edificio. 
+
+
