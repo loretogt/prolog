@@ -1,4 +1,4 @@
-lumno_prode('Garcia','Tejada','Loreto','y16i010').
+alumno_prode('Garcia','Tejada','Loreto','y16i010').
 alumno_prode('Gutierrez','Martin','Maria','y16i017').
 alumno_prode('Fernandez','Garcia','Jose Carlos','y16i024').
 
@@ -25,16 +25,15 @@ menor_bucle(A,B,N,F):-
 	arg(N,B,ValorB),
 	N1 is N+1,
 	((var(ValorA)-> menor_bucle(A,B,N1,F));
-	((var(ValorB)-> menor_bucle(A,B,N1,F)));
-	    ValorA@=<ValorB-> menor_bucle(A,B,N1,F)).
+	    ((var(ValorB)-> menor_bucle(A,B,N1,F)));
+	(ValorA@<ValorB;
+	ValorA==ValorB -> menor_bucle(A,B,N1,F))).
 
 
 lista_hojas([],[]).
 
 lista_hojas([X|Xs],[tree(X,void,void)|Ys]):-
 	lista_hojas(Xs,Ys).
-
-
 
 
 
