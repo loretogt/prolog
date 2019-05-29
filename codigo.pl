@@ -36,7 +36,7 @@ lista_hojas([X|Xs],[tree(X,void,void)|Ys]):-        %el elemetento cabeza de la 
 	lista_hojas(Xs,Ys).                             %llamamos de forma recursiva con el resto de la lista
 
 
-hojas_arbol([tree(X,Y,Z)],_,tree(X,Y,Z)):-!.        &caso limite en el que solo tienes un elemento en la lista, y por tanto ese es el Arbol que te piden
+hojas_arbol([tree(X,Y,Z)],_,tree(X,Y,Z)):-!.        %caso limite en el que solo tienes un elemento en la lista, y por tanto ese es el Arbol que te piden
 
 hojas_arbol([tree(X,Xizq,Xder),tree(Y,Yizq,Yder)],Comp,Arbol):-                                %si solo te quedan dos elementos en la lista
 	menor(X,Y,Comp,M),                                                                         %comprobamos cual es menor cumpliendo la condicion de comp
