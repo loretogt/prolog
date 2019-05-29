@@ -40,7 +40,7 @@ hojas_arbol([tree(X,Y,Z)],_,tree(X,Y,Z)):-!.        %caso limite en el que solo 
 
 hojas_arbol([tree(X,Xizq,Xder),tree(Y,Yizq,Yder)],Comp,Arbol):-                                %si solo te quedan dos elementos en la lista
 	menor(X,Y,Comp,M),                                                                         %comprobamos cual es menor cumpliendo la condicion de comp
-	(Xizq==void->(hojas_arbol([tree(M,tree(Y,Yizq,Yder),tree(X,Xizq,Xder))],Comp,Arbol))       %si el primer elemento su hijo izquierdo es void, entonces eran elementos impares
+	(Xizq==void->(hojas_arbol([tree(M,tree(Y,Yizq,Yder),tree(X,Xizq,Xder))],Comp,Arbol));       %si el primer elemento su hijo izquierdo es void, entonces eran elementos impares
 	hojas_arbol([tree(M,tree(X,Xizq,Xder),tree(Y,Yizq,Yder))],Comp,Arbol)).                    %sino era un numero par de elementos, y el orden con el que se llama recursivamente cambia
 
 hojas_arbol([tree(X,void,void),tree(Y,Yizq,Yder)|Ys],Comp,Arbol):-          %si tenemos mas de dos elementos de la lista, el primero sus hijos son void
