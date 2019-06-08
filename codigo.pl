@@ -55,3 +55,43 @@ hojas_arbol([tree(X,Xizq,Xder),tree(Y,Yizq,Yder)|Ys],Comp,Arbol):-          %cas
 	append(Ys,[tree(M,tree(X,Xizq,Xder),tree(Y,Yizq,Yder))],Z),             % se contatena al resto de la lista, el nuevo tree donde la cabeza es el menor de los hijos
 	hojas_arbol(Z,Comp,Arbol).                                              %se llama recursivamente con esta nueva lista creada
 
+ordenacion(void,_,[]):- !.			%caso base del metodo
+
+ordenacion(tree(X,void,void),_,Orden):-		%caso en el que tenemos el ultimo nodo
+    append([X],Nord,Orden),			%añadimos este elemento a la lista
+    ordenacion(void,_,Nord).			%llamamos al metodo ordenacion una ultima vez con void para terminar el metodo 
+
+ordenacion(tree(X,Xizq,Xder),Comp,Orden):-	%caso en el que no es el ultimo nodo 
+    append([X],Nord,Orden),			%añadimos la raiz del arbol a la lista resultado (ya que es el menor elemento )
+    reflotar(tree(X,Xizq,Xder),[],Lista),	%llamamos al metodo auxiliar reflotar
+    hojas_arbol(Lista,Comp,Arbol),		%llamamos a hojas arbol con el arbol principal sin el nodo con el que coincide la raiz 
+    ordenacion(Arbol,Comp,Nord).		%realizamos la recursividad 
+
+reflotar(tree(_,void,void),Ref,Lista):-		%caso base
+    crearLista(Ref,Lista),!.			%llamamos al metodo auxiliar crearLista
+
+reflotar(tree(X,tree(X,Yizq,Yder),tree(Z,Zizq,Zder)),Ref,Lista):-	%Caso en el que la raiz coincide con el hijo izquierdo 
+    append(Ref,[tree(Z,Zizq,Zder)],NRef),				%añadimos a la lista Ref(lista auxiliar) el hijo derecho
+    reflotar(tree(X,Yizq,Yder),NRef,Lista).				%llamamos recursivamente con el hijo izquierdo y la nueva lista creada en el paso anterior 
+
+reflotar(tree(X,tree(Y,Yizq,Yder),tree(X,Zizq,Zder)),Ref,Lista):-	%Caso en el que la raiz coincide con el hijo derecho
+    append(Ref,[tree(Y,Yizq,Yder)],NRef),				%añadimos a la lista Ref(lista auxiliar) el hijo izquierdo 
+    reflotar(tree(X,Zizq,Zder),NRef,Lista).				%llamamos recursivamente con el hijo derecho y la nueva lista creada en el paso anterior
+
+crearLista([],[]):-!.	%caso base 
+
+crearLista([tree(X,void,void)|Xs],[tree(X,void,void)|Ys]):-	%caso en el que en ambas listas coincide el mismo nodo y este es un nodo con hijos
+    crearLista(Xs,Ys).						%llamada recursiva	
+
+crearLista([tree(_,Xizq,Xder)|Xs],Lista):-	%caso en el que no tenemos un nodo sin hijos
+    append(Xs,[Xizq],List1),			%añadimos la parte izquierda a la primera lista
+    append(List1,[Xder],List2),			%añadimos la parte derecha a la primera lista
+    crearLista(List2,Lista).			%llamada recursiva 
+
+ordenar([],_,[]):-!.		%caso base 
+
+ordenar(Lista,Comp,Orden):-
+	lista_hojas(Lista,ListaHojas),		%llamamos a lista_hojas para crear una lista de hojas a partir de la lista dada
+	hojas_arbol(ListaHojas,Comp,Arbol),	%llamamos a hojas_arbol para crear el arbol a partir de las hojas obtenidas anteriormente
+	ordenacion(Arbol,Comp,Orden).		%finalmente llamamos a ordenacion para obtener la lista ordenada 
+	
